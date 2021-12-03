@@ -4,7 +4,7 @@ var fuelImage, powerCoinImage, lifeImage;
 var obstacle1Image, obstacle2Image;                        //C41// SA
 var database, gameState;
 var form, player, playerCount;
-var allPlayers, car1, car2, fuels, powerCoins, obstacles; // C41//SA
+var allPlayers, car1, car2, fuels, powerCoins, obstacle1,obstacle2; // C41//SA
 var cars = [];
 var blastImage;                   //C42// SA
 
