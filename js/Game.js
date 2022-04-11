@@ -14,7 +14,7 @@ class Game {
 
   getState() {
     var gameStateRef = database.ref("gameState");
-    gameStateRef.on("value", function(data) {
+    gameStateRef.on("value", function (data) {
       gameState = data.val();
     });
   }
@@ -45,13 +45,13 @@ class Game {
 
     fuels = new Group();
     powerCoins = new Group();
-    obstacle1 = new Group(); 
-    obstacle2 = new Group(); 
+    obstacle1 = new Group();
+    obstacle2 = new Group();
     var obstacle1Positions = [
       { x: width / 2 - 150, y: height - 1300, image: obstacle1Image },
       { x: width / 2 + 250, y: height - 1800, image: obstacle1Image },
       { x: width / 2 - 180, y: height - 3300, image: obstacle1Image },
-     
+
       { x: width / 2 - 150, y: height - 4300, image: obstacle1Image },
       { x: width / 2, y: height - 5300, image: obstacle1Image },
     ];
@@ -60,7 +60,7 @@ class Game {
       { x: width / 2 + 250, y: height - 800, image: obstacle2Image },
       { x: width / 2 - 180, y: height - 2300, image: obstacle2Image },
       { x: width / 2, y: height - 2800, image: obstacle2Image },
-     
+
       { x: width / 2 + 180, y: height - 3300, image: obstacle2Image },
       { x: width / 2 + 250, y: height - 3800, image: obstacle2Image },
       { x: width / 2 + 250, y: height - 4800, image: obstacle2Image },
@@ -173,7 +173,13 @@ class Game {
 
           this.handleFuel(index);
           this.handlePowerCoins(index);
-          this.handleObstacleCollision(index); //C41//SA
+          this.handleObstacleCollision(index);
+          this.handleCarCollision(index);
+
+          if (player.life <= 0) {
+            this.blast = true;
+            this.playerMoving = false;
+          }
 
           // Changing camera position in y direction
           camera.position.y = cars[index - 1].position.y;
@@ -205,7 +211,7 @@ class Game {
 
   handleFuel(index) {
     // Adding fuel
-    cars[index - 1].overlap(fuels, function(collector, collected) {
+    cars[index - 1].overlap(fuels, function (collector, collected) {
       player.fuel = 185;
       //collected is the sprite in the group collectibles that triggered
       //the event
@@ -224,7 +230,7 @@ class Game {
   }
 
   handlePowerCoins(index) {
-    cars[index - 1].overlap(powerCoins, function(collector, collected) {
+    cars[index - 1].overlap(powerCoins, function (collector, collected) {
       player.score += 21;
       player.update();
       //collected is the sprite in the group collectibles that triggered
@@ -311,28 +317,32 @@ class Game {
   }
 
   handlePlayerControls() {
-    if (keyIsDown(UP_ARROW)) {
-      this.playerMoving = true;
-      player.positionY += 10;
-      player.update();
-    }
 
-    if (keyIsDown(LEFT_ARROW) && player.positionX > width / 3 - 50) {
-      this.leftKeyActive = true;
-      player.positionX -= 5;
-      player.update();
-    }
+    if (!this.blast) {
 
-    if (keyIsDown(RIGHT_ARROW) && player.positionX < width / 2 + 300) {
-      this.leftKeyActive = false;
-      player.positionX += 5;
-      player.update();
+      if (keyIsDown(UP_ARROW)) {
+        this.playerMoving = true;
+        player.positionY += 10;
+        player.update();
+      }
+
+      if (keyIsDown(LEFT_ARROW) && player.positionX > width / 3 - 50) {
+        this.leftKeyActive = true;
+        player.positionX -= 5;
+        player.update();
+      }
+
+      if (keyIsDown(RIGHT_ARROW) && player.positionX < width / 2 + 300) {
+        this.leftKeyActive = false;
+        player.positionX += 5;
+        player.update();
+      }
     }
   }
 
   //C41 //SA
   handleObstacleCollision(index) {
-    if(cars[index-1].collide(obstacle1)||cars[index-1].collide(obstacle2)){      //C41 //TA
+    if (cars[index - 1].collide(obstacle1) || cars[index - 1].collide(obstacle2)) {      //C41 //TA
       if (this.leftKeyActive) {
         player.positionX += 100;
       } else {
@@ -370,4 +380,77 @@ class Game {
       confirmButtonText: "Thanks For Playing"
     });
   }
+
+  handleCarCollision(index) {
+    if(index == 1) {
+      if(cars[index-1].collide(cars[1])){
+        if (this.leftKeyActive) {
+          player.positionX += 100
+        } else {
+          player.positionX -= 100
+        }
+        if(player.life>0){
+          player.life -= 46.25
+        }
+        player.update();
+      }
+    }
+
+    if(index == 2) {
+      if(cars[index-1].collide(cars[0])) {
+        if (this.leftKeyActive) {
+          player.positionX += 100
+        } else {
+          player.positionX -= 100
+        }
+        if(player.life>0){
+          player.life -= 46.25
+        }
+        player.update();
+      }
+    }
+
+  }
+
+  end() {
+    console.log('game over')
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
